@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -12,24 +13,29 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 
+import br.com.persistence.dto.AlunoRequest;
+import br.com.persistence.dto.AlunoResponse;
+import br.com.persistence.mapper.AlunoMapper;
 import br.com.persistence.models.Aluno;
 import br.com.persistence.models.AlunoRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequestScoped
+@Slf4j
+@RequiredArgsConstructor
 public class AlunoDao {
     
-
-    @PersistenceContext
-    EntityManager em;
-
     @Inject
     AlunoRepository AlunoRepository;
 
+    private final AlunoMapper mapper;
 
-    public List<Aluno> buscaAluno() throws Exception {
+
+    public List<AlunoResponse> buscaAluno() throws Exception {
         try {
            
-            return AlunoRepository.listAll();
+            return mapper.toResponse(AlunoRepository.listAll());
         } catch (NoResultException e) {
             return new ArrayList<>();
         } catch (PersistenceException e) {
@@ -50,11 +56,12 @@ public class AlunoDao {
 
 
     @Transactional
-    public Aluno inserirAluno(Aluno aluno) throws Exception {
+    public AlunoResponse inserirAluno(AlunoRequest aluno) throws Exception {
         
-        AlunoRepository.persist(aluno);
+        Aluno entity = Aluno.builder().nome(aluno.getNome()).build();
+        AlunoRepository.persist(entity);
 
-        return aluno;
+        return mapper.toResponse(entity);
     }
 
    
