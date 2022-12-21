@@ -23,6 +23,7 @@ import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 
 
 import br.com.persistence.dao.AlunoDao;
+import br.com.persistence.dto.AlunoRequest;
 import br.com.persistence.models.Aluno;
 import br.com.services.AlunoService;
 
@@ -76,7 +77,7 @@ public class AlunosResource {
             description = "Aluno",
             content = { @Content(mediaType = "application/json",
                     schema = @Schema(implementation = Aluno.class))})
-     public Response inserirAluno(Aluno aluno) throws Exception {
+     public Response inserirAluno(AlunoRequest aluno) throws Exception {
                         return  Response.status(Response.Status.CREATED).entity(service.inserirAluno(aluno)).build();
     }
 

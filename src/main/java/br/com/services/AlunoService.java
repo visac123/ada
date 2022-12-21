@@ -5,6 +5,8 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import br.com.persistence.dao.AlunoDao;
+import br.com.persistence.dto.AlunoRequest;
+import br.com.persistence.dto.AlunoResponse;
 import br.com.persistence.models.Aluno;
 
 
@@ -15,7 +17,7 @@ public class AlunoService {
     AlunoDao dao;
 
     @Transactional(rollbackOn = Exception.class)
-    public Aluno inserirAluno(Aluno aluno) throws Exception{
+    public AlunoResponse inserirAluno(AlunoRequest aluno) throws Exception{
         return dao.inserirAluno(aluno);
     }    
 }
