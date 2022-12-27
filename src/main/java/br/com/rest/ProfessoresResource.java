@@ -6,6 +6,7 @@ import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -23,6 +24,7 @@ import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 
 
 import br.com.persistence.dao.ProfessorDao;
+import br.com.persistence.dto.ProfessorRequest;
 import br.com.persistence.models.Professor;
 import br.com.services.ProfessorService;
 
@@ -76,8 +78,21 @@ public class ProfessoresResource {
             description = "Professor",
             content = { @Content(mediaType = "application/json",
                     schema = @Schema(implementation = Professor.class))})
-     public Response inserirProfessor(Professor professor) throws Exception {
+     public Response inserirProfessor(ProfessorRequest professor) throws Exception {
                         return  Response.status(Response.Status.CREATED).entity(service.inserirProfessor(professor)).build();
+    }
+
+    @PATCH
+    @Path("/{id}/titular/{idProfessor}")
+    @Operation(summary = "add tutorando",
+            description = "add tutorando")
+    @APIResponse(
+            responseCode = "200",
+            description = "Professor",
+            content = { @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = Professor.class, type = SchemaType.ARRAY))})
+    public Response updateTitular(@PathParam("id") long idProfessor, @PathParam("idProfessor") long idAluno) throws Exception{
+        return Response.status(Response.Status.OK).entity(dao.mudarTutorando(idProfessor, idAluno)).build();
     }
 
     @GET
