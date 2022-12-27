@@ -12,24 +12,35 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 
+import br.com.persistence.dto.ProfessorRequest;
+import br.com.persistence.dto.ProfessorResponse;
+import br.com.persistence.mapper.AlunoMapper;
+import br.com.persistence.mapper.ProfessorMapper;
 import br.com.persistence.models.Professor;
 import br.com.persistence.models.ProfessorRepository;
+import br.com.persistence.models.Aluno;
+import br.com.persistence.models.AlunoRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequestScoped
+@Slf4j
+@RequiredArgsConstructor
 public class ProfessorDao {
     
-
-    @PersistenceContext
-    EntityManager em;
+    @Inject
+    AlunoRepository alunoRepository;
 
     @Inject
     ProfessorRepository ProfessorRepository;
 
+    private final ProfessorMapper mapper;
 
-    public List<Professor> buscaProfessor() throws Exception {
+
+    public List<ProfessorResponse> buscaProfessor() throws Exception {
         try {
            
-            return ProfessorRepository.listAll();
+            return mapper.toResponse(ProfessorRepository.listAll());
         } catch (NoResultException e) {
             return new ArrayList<>();
         } catch (PersistenceException e) {
@@ -38,7 +49,6 @@ public class ProfessorDao {
     }
 
     public List<Professor> buscaProfessoresEspecificos(String prefixo) throws Exception {
-        System.out.println("AAAAAAAAAAAAAAAAAAAA" + ProfessorRepository.list("nome like ?1", prefixo + "%"));
         try {
            
             return ProfessorRepository.list("nome like ?1", prefixo + "%");
@@ -51,14 +61,15 @@ public class ProfessorDao {
 
 
     @Transactional
-    public Professor inserirProfessor(Professor professor) throws Exception {
+    public ProfessorResponse inserirProfessor(ProfessorRequest professor) throws Exception {
         
-        ProfessorRepository.persist(professor);
+        Professor entity = Professor.builder().nome(professor.getNome()).build();
+        ProfessorRepository.persist(entity);
 
-        return professor;
+        return mapper.toResponse(entity);
     }
 
-
+   
     public Professor encontrarProfessorId(Long id) throws Exception {
         Professor professor = ProfessorRepository.findById(id);
         return professor;
@@ -74,12 +85,20 @@ public class ProfessorDao {
     }
 
     @Transactional
+    public Professor mudarTutorando(Long id, Long idAluno) throws Exception {
+        Professor professor = ProfessorRepository.findById(id);
+        Aluno aluno = alunoRepository.findById(idAluno);
+        professor.addAluno(aluno);
+        return professor;
+        
+    }
+
+    @Transactional
     public Professor deletarProfessor(Long id) throws Exception {
         Professor professor= ProfessorRepository.findById(id);
         ProfessorRepository.delete(professor);     
         return professor;   
     }
-
   
 
 }

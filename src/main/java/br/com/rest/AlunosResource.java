@@ -6,6 +6,7 @@ import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -82,7 +83,7 @@ public class AlunosResource {
     }
 
     @GET
-    @Path("/{id}")
+    @Path("/BuscarId/{id}")
     @Operation(summary = "Listar aluno Por ID",
             description = "Retorna uma aluno de acordo com id solicitado")
     @APIResponse(
@@ -93,6 +94,21 @@ public class AlunosResource {
     public Response obtemAlunoById(final @PathParam("id") long id) throws Exception  {
         return Response.status(Response.Status.OK).entity(dao.encontrarAlunoId(id)).build();
     }
+
+
+    @PATCH
+    @Path("/{id}/titular/{idProfessor}")
+    @Operation(summary = "add tutor",
+            description = "add tutor")
+    @APIResponse(
+            responseCode = "200",
+            description = "Aluno",
+            content = { @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = Aluno.class, type = SchemaType.ARRAY))})
+    public Response updateTitular(@PathParam("id") long idAluno, @PathParam("idProfessor") long idProfessor) throws Exception{
+        return Response.status(Response.Status.OK).entity(dao.mudarTutor(idAluno, idProfessor)).build();
+    }
+    
 
     @PUT
     @Path("/{id}/{nome}")

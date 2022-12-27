@@ -18,6 +18,8 @@ import br.com.persistence.dto.AlunoResponse;
 import br.com.persistence.mapper.AlunoMapper;
 import br.com.persistence.models.Aluno;
 import br.com.persistence.models.AlunoRepository;
+import br.com.persistence.models.Professor;
+import br.com.persistence.models.ProfessorRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,6 +30,9 @@ public class AlunoDao {
     
     @Inject
     AlunoRepository AlunoRepository;
+
+    @Inject
+    ProfessorRepository professorRepository;
 
     private final AlunoMapper mapper;
 
@@ -74,6 +79,16 @@ public class AlunoDao {
     public Aluno mudarAluno(Long id, String nome) throws Exception {
         Aluno aluno = AlunoRepository.findById(id);
         aluno.setNome(nome);
+
+        return aluno;
+        
+    }
+
+    @Transactional
+    public Aluno mudarTutor(Long id, Long idProf) throws Exception {
+        Aluno aluno = AlunoRepository.findById(id);
+        Professor prof = professorRepository.findById(idProf);
+        aluno.setTutor(prof);
 
         return aluno;
         
